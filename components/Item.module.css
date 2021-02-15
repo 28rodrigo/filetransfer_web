@@ -1,5 +1,5 @@
 .item {
-    margin-left:2rem;
+    margin-left:0rem;
     margin-right:2rem;
     margin-bottom:0.7rem;
     border: 2px double rgba(0, 0, 0, 0.30);
@@ -10,7 +10,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    width: 150%;
+    width: 100%;
     max-width: 200%;
   }
   .item div {

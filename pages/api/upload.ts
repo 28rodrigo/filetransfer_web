@@ -1,11 +1,12 @@
 import nextConnect from 'next-connect';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import multer from 'multer';
-
+import JsZip from 'jszip'
+import{saveAs} from 'file-saver'
 const upload = multer({
   storage: multer.diskStorage({
     destination: './public/uploads',
-    filename: (req, file, cb) => cb(null, file.originalname),
+    filename: (req, file, cb) => cb(null, `${file.originalname}-${+Date.now()}.zip`),
   }),
 });
 
@@ -20,8 +21,8 @@ const apiRoute = nextConnect({
 
 apiRoute.use(upload.array('theFiles',12));
 
-apiRoute.post((req, res) => {
-  res.status(200).json({ data: 'success' });
+apiRoute.post((req,res) => {
+  res.status(200).json({"data":"hello"});
 });
 
 export default apiRoute;

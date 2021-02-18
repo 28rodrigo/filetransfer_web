@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Link from 'next/link'
 import styles from '../styles/Home.module.css'
 import { useForm } from 'react-hook-form';
 import Image from 'next/image'
@@ -9,6 +10,8 @@ import item from '../components/item';
 import JsZip from 'jszip'
 import{saveAs} from 'file-saver'
 const prettyBytes = require('pretty-bytes');
+import fileDownload from 'js-file-download';
+import FileModal from './../components/FileModal'
 interface FileDictionary{
   filename: string;
   file:File;
@@ -23,7 +26,7 @@ export default function Home() {
   const [buttonVisible,setButtonVisible]=useState(false);
   const [items,setItems]=useState(Array<ItemProps>());
   const [files,setFiles]=useState(Array<FileDictionary>());
-  
+  const [open,setOpen]=useState(false);
   useEffect(() => {
     
   }, [items])
@@ -69,12 +72,28 @@ export default function Home() {
     console.log("formdata->"+files[1])
     
   };
+  const handleDownload=async () => {
+    axios({
+      url: '/api/upload', //your url
+      method: 'GET',
+      responseType: 'blob', // important
+    }).then((response) => {
+       const url = window.URL.createObjectURL(new Blob([response.data]));
+       const link = document.createElement('a');
+       link.href = url;
+       link.setAttribute('download', 'file.zip'); //or any other extension
+       document.body.appendChild(link);
+       link.click();
+    });
+  }
   const handleSubmitButton=async()=>{
     const config = {
-      headers: { 'content-type': 'multipart/form-data' },
+      headers: { 'content-type': 'multipart/form-data',
+     },
       onUploadProgress: (event) => {
         console.log(`Current progress:`, Math.round((event.loaded * 100) / event.total));
       },
+    
     };
     const formData=new FormData();
     const zip=new JsZip();
@@ -90,11 +109,12 @@ export default function Home() {
  
     
     
-    const response = await axios.post('/api/upload', formData, config);
+    const response=await axios.post('/api/upload', formData, config);
     setFiles(Array<FileDictionary>());
     setItems(Array<ItemProps>());
     setButtonVisible(false);
     alert(response.data.data);
+    
   }
   return (
     <div className={styles.container}>
@@ -103,18 +123,22 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <nav className={styles.nav}>
-        <h2>File Transfer</h2>
+        <Link href="/"><h2>File Transfer</h2></Link>
         <div>
           <p>Contact Us</p>
         </div>
         
       </nav>
+      <p className={styles.pdesc}>Send files up to 1Gb. Files are available for download during 12 hours</p>
+
       <main className={styles.main}>
           <label className={styles.label}>
             Choose a file
-            <input multiple hidden type="file" name="file" id="file" className="input" onChange={onChangeHandler } />
+            <input multiple hidden type="file" name="file" id="file" className="input" onChange={onChangeHandler} />
           </label>
           
+          <button id="hello" onClick={() => {navigator.clipboard.writeText('hello');document.getElementById("hello").innerHTML="copiado!"}}>open</button>
+          <button onClick={()=>setOpen(true)}>open</button>
           {items.map(item =>{
               console.log(item);
               return(
@@ -124,9 +148,8 @@ export default function Home() {
               )
               
             })}
-          
-          
           {buttonVisible && <button onClick={handleSubmitButton} className={styles.button}>Share Files</button>}
+     <FileModal open={open} setOpen={setOpen} text="ola"/>
       </main>
 
       <footer className={styles.footer}>

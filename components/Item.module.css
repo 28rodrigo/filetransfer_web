@@ -19,6 +19,9 @@
     flex-direction: row;
     align-items: center;
   }
+  .item div p {
+    margin-top: 10px;
+  }
   .item img:hover {
   cursor: pointer;
   box-shadow: 1px 1px 1px 1px rgba(0, 0, 255, .2);

@@ -7,9 +7,12 @@ import fs from 'fs'
 import path from 'path'
 import prettyBytes from 'pretty-bytes';
 import router from'next/router'
-import { useEffect } from 'react'
+import { useEffect,useState } from 'react'
+import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 // posts will be populated at build time by getStaticProps()
 function Download(props) {
+  const [barVisible,setBarVisible]=useState(true);
   const router = useRouter()
   useEffect(()=>{
     if(props.error)
@@ -18,18 +21,22 @@ function Download(props) {
     }
   })
   const handleDownload=async () => {
+    setBarVisible(true);
     axios({
       url: `/api/downloads/${props.id}`, //your url
       method: 'GET',
-      responseType: 'blob', // important
+      responseType: 'blob',
+      // important
     }).then((response) => {
+      const aux=Date.now.toString();
        const url = window.URL.createObjectURL(new Blob([response.data]));
        const link = document.createElement('a');
        link.href = url;
-       link.setAttribute('download', `filetransfer-${Date.now}.zip`); //or any other extension
+       link.setAttribute('download', `filetransfer-${aux}.zip`); //or any other extension
        document.body.appendChild(link);
        link.click();
     });
+    setBarVisible(false);
   }
   return (
     <div className={styles.container}>
@@ -44,6 +51,14 @@ function Download(props) {
         </div>
         
       </nav>
+      {barVisible && <div className={styles.bar}>
+          
+          <div>
+            <CircularProgress />
+          </div>
+          
+      </div>
+      }
       
       <main className={styles.main}>
         <button className={styles.button} onClick={handleDownload}>Download File</button>
@@ -54,12 +69,12 @@ function Download(props) {
 
       <footer className={styles.footer}>
         <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+         href="https://github.com/28rodrigo"
           target="_blank"
           rel="noopener noreferrer"
         >
           Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
+          <h3>&nbsp;&nbsp;Rodrigo Pereira</h3>
         </a>
       </footer>
     </div>

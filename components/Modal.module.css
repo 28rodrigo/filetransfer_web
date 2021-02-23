@@ -1,0 +1,17 @@
+.item img:hover {
+    cursor: pointer;
+    box-shadow: 1px 1px 1px 1px rgba(0, 0, 255, .2);
+}
+.div {
+    display:flex;
+    justify-content: center;
+    flex-direction: row;
+}
+.div button {
+    margin-left: 0.8rem;
+}
+
+.a:hover{
+    cursor: pointer;
+    text-decoration:underline;
+}

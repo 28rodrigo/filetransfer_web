@@ -5,6 +5,7 @@ import JsZip from 'jszip'
 import{saveAs} from 'file-saver'
 import path from 'path';
 import fs from 'fs';
+
 type NextApiRequestWithFormData = NextApiRequest & {
   files: any[],
 }
@@ -12,6 +13,7 @@ const upload = multer({
   storage: multer.diskStorage({
     destination: './public/uploads',
     filename: (req, file, cb) => cb(null, `file-${+Date.now()}.zip`),
+    
   }),
 });
 

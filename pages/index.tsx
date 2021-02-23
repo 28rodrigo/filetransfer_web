@@ -12,6 +12,8 @@ import{saveAs} from 'file-saver'
 const prettyBytes = require('pretty-bytes');
 import fileDownload from 'js-file-download';
 import FileModal from './../components/FileModal'
+import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 interface FileDictionary{
   filename: string;
   file:File;
@@ -24,9 +26,12 @@ interface ItemProps{
 }
 export default function Home() {
   const [buttonVisible,setButtonVisible]=useState(false);
+  const [barVisible,setBarVisible]=useState(false);
+  const [progress,setProgress]=useState(0);
   const [items,setItems]=useState(Array<ItemProps>());
   const [files,setFiles]=useState(Array<FileDictionary>());
   const [open,setOpen]=useState(false);
+  const [text,setText]=useState('');
   useEffect(() => {
     
   }, [items])
@@ -54,17 +59,26 @@ export default function Home() {
    
   }
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files?.length) {
-      return;
+    if (event.target.files?.length>10) {
+      
     }
 
     const formDatas = files;
     //const ite=items;
-    setButtonVisible(true);
+    
     Array.from(event.target.files).forEach((file) => {
-      formDatas.push({filename:file.name,file:file})
-     // ite.push();
-      setItems(items.concat({filename:file.name,key:file.name,size:prettyBytes(file.size),type:file.type}));
+      if(file.size>100000000)
+        {
+          alert("Only allow files under 100Mb!")
+          if(buttonVisible!==true)
+          setButtonVisible(false);
+        }else{
+          formDatas.push({filename:file.name,file:file})
+          setButtonVisible(true);
+          // ite.push();
+           setItems(items.concat({filename:file.name,key:file.name,size:prettyBytes(file.size),type:file.type}));
+        }
+     
     });
     setFiles(formDatas);
     console.log("itemslenght->"+items.length[1])
@@ -72,26 +86,15 @@ export default function Home() {
     console.log("formdata->"+files[1])
     
   };
-  const handleDownload=async () => {
-    axios({
-      url: '/api/upload', //your url
-      method: 'GET',
-      responseType: 'blob', // important
-    }).then((response) => {
-       const url = window.URL.createObjectURL(new Blob([response.data]));
-       const link = document.createElement('a');
-       link.href = url;
-       link.setAttribute('download', 'file.zip'); //or any other extension
-       document.body.appendChild(link);
-       link.click();
-    });
-  }
+  
   const handleSubmitButton=async()=>{
+    setBarVisible(true);
     const config = {
       headers: { 'content-type': 'multipart/form-data',
      },
       onUploadProgress: (event) => {
         console.log(`Current progress:`, Math.round((event.loaded * 100) / event.total));
+        setProgress(Math.round((event.loaded * 100) / event.total));
       },
     
     };
@@ -113,8 +116,11 @@ export default function Home() {
     setFiles(Array<FileDictionary>());
     setItems(Array<ItemProps>());
     setButtonVisible(false);
-    alert(response.data.data);
-    
+    //alert(response.data.data);
+    setText(response.data.data);
+    setOpen(true);
+    setBarVisible(false);
+    setProgress(0);
   }
   return (
     <div className={styles.container}>
@@ -128,17 +134,25 @@ export default function Home() {
           <p>Contact Us</p>
         </div>
         
+        
       </nav>
-      <p className={styles.pdesc}>Send files up to 1Gb. Files are available for download during 12 hours</p>
-
+      <p className={styles.pdesc}>Send files up to 100Mb for free. Files are available for download during 12 hours</p>
+      {barVisible && <div className={styles.bar}>
+          <LinearProgress variant="determinate" value={progress} />
+          <div>
+            <CircularProgress />
+          </div>
+          
+      </div>
+      }
       <main className={styles.main}>
           <label className={styles.label}>
             Choose a file
             <input multiple hidden type="file" name="file" id="file" className="input" onChange={onChangeHandler} />
           </label>
           
-          <button id="hello" onClick={() => {navigator.clipboard.writeText('hello');document.getElementById("hello").innerHTML="copiado!"}}>open</button>
-          <button onClick={()=>setOpen(true)}>open</button>
+         {/*  <button id="hello" onClick={() => {navigator.clipboard.writeText('hello');document.getElementById("hello").innerHTML="copiado!"}}>open</button> */}
+          {/* {<button onClick={()=>setOpen(true)}>open</button>} */}
           {items.map(item =>{
               console.log(item);
               return(
@@ -149,17 +163,17 @@ export default function Home() {
               
             })}
           {buttonVisible && <button onClick={handleSubmitButton} className={styles.button}>Share Files</button>}
-     <FileModal open={open} setOpen={setOpen} text="ola"/>
+     <FileModal open={open} setOpen={setOpen} text={text}/>
       </main>
 
       <footer className={styles.footer}>
         <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+          href="https://github.com/28rodrigo"
           target="_blank"
           rel="noopener noreferrer"
         >
           Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
+          <h3>&nbsp;&nbsp;Rodrigo Pereira</h3>
         </a>
       </footer>
     </div>

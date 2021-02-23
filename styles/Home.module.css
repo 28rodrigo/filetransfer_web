@@ -147,9 +147,14 @@
 }
 
 .footer a {
+  font-size:0.8rem;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.footer a h3:hover{
+  
+  color:rgba(26, 120, 243, 0.863)
 }
 
 .title a {
@@ -230,10 +235,40 @@
 .logo {
   height: 1em;
 }
+.bar{
+  width: 100%;
+  margin-top: 0.9rem;
+  
+}
+.bar div{
+  margin-top:5px
+}
 
-@media (max-width: 600px) {
+@media (min-width: 1024px) {
   .grid {
     width: 100%;
     flex-direction: column;
   }
+  .pdesc {
+    font-size: 1.5rem;
+    opacity: 0.7;
+    text-align: center;
+    position: relative;
+    top:5rem ;
+  }
+  .label {
+    font-size: 3rem;
+    margin-bottom:2rem;
+  }
+  .nav h2 {
+    margin-left: 1.5rem;
+    font-size: 2rem;
+  }
+  .nav div p {
+    font-size: 1.5rem;
+  }
+  .footer a {
+    font-size:1rem
+  }
+  
 }

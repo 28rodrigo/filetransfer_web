@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
-
+import styles from './Modal.module.css'
 interface ModalProps{
     open:boolean,
     setOpen:React.Dispatch<React.SetStateAction<boolean>>,
@@ -50,8 +50,15 @@ const FileModal: React.FC<ModalProps> = (props)=> {
       >
         <Fade in={props.open}>
           <div className={classes.paper}>
+
             <h2 id="transition-modal-title">Share this Link</h2>
-            <p id="transition-modal-description">{props.text}</p>
+            <div className={styles.div}> 
+              <a className={styles.a} href={props.text} id="transition-modal-description">{props.text}</a>
+              <button onClick={() => {navigator.clipboard.writeText(props.text);handleClose()}}>
+                <img className={styles.image}  src="/images/copy.png" width={25} height={22} alt="bin"/>
+              </button>
+            </div>
+            
           </div>
         </Fade>
       </Modal>

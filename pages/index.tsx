@@ -14,6 +14,7 @@ import fileDownload from 'js-file-download';
 import FileModal from './../components/FileModal'
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
 interface FileDictionary{
   filename: string;
   file:File;
@@ -34,7 +35,7 @@ export default function Home() {
   const [text,setText]=useState('');
   useEffect(() => {
     
-  }, [items])
+  })
   const handleDeleteButton = (filename:string)=>{
     console.log("filename->"+filename)
     var arr=files;
@@ -111,13 +112,12 @@ export default function Home() {
       formData.append("theFiles",content);
  
     
-    
     const response=await axios.post('/api/upload', formData, config);
     setFiles(Array<FileDictionary>());
     setItems(Array<ItemProps>());
     setButtonVisible(false);
     //alert(response.data.data);
-    setText(response.data.data);
+    setText(response.data.fileLocation);
     setOpen(true);
     setBarVisible(false);
     setProgress(0);

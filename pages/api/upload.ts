@@ -5,16 +5,20 @@ import JsZip from 'jszip'
 import{saveAs} from 'file-saver'
 import path from 'path';
 import fs from 'fs';
-
+import {Storage} from '@google-cloud/storage'
 type NextApiRequestWithFormData = NextApiRequest & {
-  files: any[],
+  file: any,
 }
+const storage=new Storage({
+  projectId:process.env.GCLOUD_PROJECT_ID,
+  keyFilename:'config/firebase-key.json',
+});
+const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET_URL);
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: './public/uploads',
-    filename: (req, file, cb) => cb(null, `file-${+Date.now()}.zip`),
-    
-  }),
+  storage: multer.memoryStorage(),
+  limits:{
+    fileSize:100*1024*1024
+  } 
 });
 
 const apiRoute = nextConnect({
@@ -29,11 +33,38 @@ const apiRoute = nextConnect({
 //apiRoute.use(upload.array('theFiles',12));
 
 apiRoute.post((req:NextApiRequestWithFormData,res) => {
-  upload.array("theFiles", 3)(req as any, {} as any, err => {
+  upload.single("theFiles")(req as any, {} as any, err => {
     // do error handling here
-    console.log(req.files) // do something with the files here
-
-    res.json({"data":`${req.headers.origin}/downloads/${req.files[0].filename}`});
+    console.log(req.file) // do something with the files here
+    try{
+      if(!req.file){
+        res.status(400).send('Error, could not upload file');
+        return;
+      }
+      const blob=bucket.file(req.file.originalname);
+      blob.name=`file-${Date.now()}`;
+      const blobWriter=blob.createWriteStream({
+        metadata: {
+          contentType: req.file.mimetype,
+        },
+      });
+      blobWriter.on('error',(err)=>{
+        res.status(500).send(err);
+        return;
+      });
+      blobWriter.on('finish',()=>{
+        const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURI(blob.name)}?alt=media`;
+        res.status(200).send({fileName:req.file.originalname,fileLocation:publicUrl});
+      });
+  
+      blobWriter.end(req.file.buffer);
+    }
+    catch(error){
+      res.status(400).send(`Error, could not upload file: ${error}`);
+    return;
+    }
+    
+    //res.json({"data":`${req.headers.origin}/downloads/${req.file.filename}`});
     
   })
 });

@@ -13,6 +13,7 @@ type NextApiRequestWithFormData = NextApiRequest & {
 
 const cid=process.env.GCLOUD_STORAGE_PRIVATE_KEY;
 const newcid=cid.replace(/[^\u0020-\u007a]/g, '\n');
+console.log("private",newcid);
 const credentials= {
   type: process.env.GCLOUD_STORAGE_TYPE,  
   private_key: newcid, 

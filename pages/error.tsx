@@ -1,16 +1,7 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form';
-import Image from 'next/image'
-import Item from '../components/item';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import item from '../components/item';
-import JsZip from 'jszip'
-import{saveAs} from 'file-saver'
-const prettyBytes = require('pretty-bytes');
-import fileDownload from 'js-file-download';
+
 
 interface FileDictionary{
   filename: string;

@@ -1,19 +1,14 @@
 import nextConnect from 'next-connect';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import multer from 'multer';
-import JsZip from 'jszip'
-import{saveAs} from 'file-saver'
-import path from 'path';
-import fs from 'fs';
 import {Storage} from '@google-cloud/storage'
 type NextApiRequestWithFormData = NextApiRequest & {
   file: any,
 }
 
-
 const cid=process.env.GCLOUD_STORAGE_PRIVATE_KEY;
 const newcid=cid.replace(/[^\u0020-\u007a]/g, '\n');
-console.log("private",newcid);
+
 const credentials= {
   type: process.env.GCLOUD_STORAGE_TYPE,  
   private_key: newcid, 
@@ -43,12 +38,9 @@ const apiRoute = nextConnect({
   },
 });
 
-//apiRoute.use(upload.array('theFiles',12));
 
 apiRoute.post((req:NextApiRequestWithFormData,res) => {
   upload.single("theFiles")(req as any, {} as any, err => {
-    // do error handling here
-    console.log(req.file) // do something with the files here
     try{
       if(!req.file){
         res.status(400).send('Error, could not upload file');
@@ -75,10 +67,7 @@ apiRoute.post((req:NextApiRequestWithFormData,res) => {
     catch(error){
       res.status(400).send(`Error, could not upload file: ${error}`);
     return;
-    }
-    
-    //res.json({"data":`${req.headers.origin}/downloads/${req.file.filename}`});
-    
+    } 
   })
 });
 export default apiRoute;

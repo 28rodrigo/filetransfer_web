@@ -9,10 +9,22 @@ import {Storage} from '@google-cloud/storage'
 type NextApiRequestWithFormData = NextApiRequest & {
   file: any,
 }
-const storage=new Storage({
-  projectId:process.env.GCLOUD_PROJECT_ID,
-  keyFilename:'config/firebase-key.json',
+
+
+const cid=process.env.GCLOUD_STORAGE_PRIVATE_KEY;
+const newcid=cid.replace(/[^\u0020-\u007a]/g, '\n');
+const credentials= {
+  type: process.env.GCLOUD_STORAGE_TYPE,  
+  private_key: newcid, 
+  client_email: process.env.GCLOUD_STORAGE_EMAIL,
+  client_id: process.env.STORAGE_ID,  
+}  
+
+const storage= new Storage({
+  credentials:credentials
 });
+
+
 const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET_URL);
 const upload = multer({
   storage: multer.memoryStorage(),
